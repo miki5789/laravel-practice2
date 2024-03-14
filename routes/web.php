@@ -22,7 +22,7 @@ Route::get('/{any}', function() {
         return view('app');
 })->where('any', '.*');   
 
-Route::get('/index', [ItemController::class, 'show'])->name('show');
+Route::get('/index', [ProductController::class, 'show'])->name('product.show');
 
 Auth::routes();
 

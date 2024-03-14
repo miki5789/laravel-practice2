@@ -4,59 +4,51 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-import HeaderComponent from "./components/HeaderComponent.vue";
-
-import './bootstrap';
 import { createApp } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import HeaderComponent from "./components/HeaderComponent.vue";
+import TaskListComponent from "./components/TaskListComponent.vue";
+import TaskShowComponent from "./components/TaskShowComponent.vue";
+import TaskCreateComponent from "./components/TaskCreateComponent.vue";
+import TaskEditComponent from "./components/TaskEditComponent.vue";
+import './bootstrap';
 
-const app = createApp();
-//window.Vue = Vue;
-//Vue.use(VueRouter);
 
-/*
-const router = new VueRouter({
-    mode: 'history',
+// Vue Routerの作成
+const router = createRouter({
+    history: createWebHistory(),
     routes: [
+        
         {
             path: '/tasks',
             name: 'task.list',
             component: TaskListComponent
         },
+        {
+            path: '/tasks/create',
+            name: 'task.create',
+            component: TaskCreateComponent
+        },
+        {
+            path: '/tasks/:taskId',
+            name: 'task.show',
+            component: TaskShowComponent,
+            props: true
+        },
+        {
+            path: '/tasks/:taskId/edit',
+            name: 'task.edit',
+            component: TaskEditComponent,
+            props: true
+        },
     ]
 });
-*/
+
+const app = createApp();
+app.use(router);
 //Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 app.component('header-component', HeaderComponent);
 
-/**
- * Next, we will create a fresh Vue application instance. You may then begin
- * registering components with the application instance so they are ready
- * to use in your application's views. An example is included for you.
- */
-/*
-const app = new Vue({
-    el: '#app',
-});
-*/
 import ExampleComponent from './components/ExampleComponent.vue';
 app.component('example-component', ExampleComponent);
-
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
-
-// Object.entries(import.meta.glob('./**/*.vue', { eager: true })).forEach(([path, definition]) => {
-//     app.component(path.split('/').pop().replace(/\.\w+$/, ''), definition.default);
-// });
-
-/**
- * Finally, we will attach the application instance to a HTML element with
- * an "id" attribute of "app". This element is included with the "auth"
- * scaffolding. Otherwise, you will need to add an element yourself.
- */
-
 app.mount('#app');
