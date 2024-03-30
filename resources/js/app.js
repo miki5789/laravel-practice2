@@ -11,6 +11,7 @@ import TaskListComponent from "./components/TaskListComponent.vue";
 import TaskShowComponent from "./components/TaskShowComponent.vue";
 import TaskCreateComponent from "./components/TaskCreateComponent.vue";
 import TaskEditComponent from "./components/TaskEditComponent.vue";
+import ProductListComponent from "./components/ProductListComponent.vue";
 import './bootstrap';
 
 
@@ -40,6 +41,11 @@ const router = createRouter({
             name: 'task.edit',
             component: TaskEditComponent,
             props: true
+        },
+        {
+            path: '/items',
+            name: 'item.list',
+            component: ProductListComponent
         },
     ]
 });

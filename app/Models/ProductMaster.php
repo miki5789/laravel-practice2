@@ -4,12 +4,11 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
 
-class Product_master extends Authenticatable
+class ProductMaster extends Model
 {
+    protected $table = 'product_master';
     //use HasApiTokens, HasFactory, Notifiable;
 
     /**
@@ -20,10 +19,8 @@ class Product_master extends Authenticatable
     protected $fillable = [
         'product_name',
         'brand',
-        'category1',
-        'category2',
-        'category3',
-        'delete_flag',
+        'category',
+        'delete_flg',
         'updated_at',
         'created_at'
     ];
