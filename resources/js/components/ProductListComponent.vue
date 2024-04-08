@@ -1,86 +1,46 @@
 <template>
-    <div class="container">
-        <table class="table table-hover">
-            <thead class="thead-light">
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Title</th>
-                <th scope="col">Content</th>
-                <th scope="col">Person In Charge</th>
-                <th scope="col">Show</th>
-                <th scope="col">Edit</th>
-                <th scope="col">Delete</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>Title1</td>
-                <td>Content1</td>
-                <td>Ichiro</td>
-                <td>
-                    <router-link :to="{name: 'task.show', params: {taskId: 1}}">
-                        <button class="btn btn-primary">Show</button>
-                    </router-link>
-                </td>
-                <td>
-                    <router-link :to="{name: 'task.edit', params: {taskId: 1}}">
-                        <button class="btn btn-success">Edit</button>
-                    </router-link>
-                </td>
-                <td>
-                    
-                        <button class="btn btn-danger">Delete</button>
-                    
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Title2</td>
-                <td>Content2</td>
-                <td>Jiro</td>
-                <td>
-                    <router-link :to="{name: 'task.show', params: {taskId: 2}}">
-                        <button class="btn btn-primary">Show</button>
-                    </router-link>
-                </td>
-                <td>
-                    <router-link :to="{name: 'task.edit', params: {taskId: 2}}">
-                        <button class="btn btn-success">Edit</button>
-                    </router-link>
-                </td>
-                <td>
-                    
-                        <button class="btn btn-danger">Delete</button>
-                    
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td>Title3</td>
-                <td>Content3</td>
-                <td>Saburo</td>
-                <td>
-                    <router-link :to="{name: 'task.show', params: {taskId: 3}}">
-                        <button class="btn btn-primary">Show</button>
-                    </router-link>
-                </td>
-                <td>
-                    <router-link :to="{name: 'task.edit', params: {taskId: 3}}">
-                        <button class="btn btn-success">Edit</button>
-                    </router-link>
-                </td>
-                <td>
-                    
-                        <button class="btn btn-danger">Delete</button>
-                    
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="container mt-3">
+      <div class="row">
+        <div v-for="(product, index) in products" :key="index" class="col-md-3 mb-4">
+          <div class="card h-100">
+            <img class="card-img-top" :src="product.image" alt="Product Image">
+            <div class="card-body">
+              <h5 class="card-title text-truncate">{{ product.product_name }}</h5>
+              <p class="card-text text-truncate">{{ product.product_detail_master.length > 0 && product.product_detail_master[0].price ? product.product_detail_master[0].price : '-' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</template>
-
-<script>
-    export default {}
-</script>
+  </template>
+  
+  <script>
+  export default {
+    data() {
+      return {
+        products: []
+      }
+    },
+    methods: {
+      getProducts() {
+        axios.get('/api/index')
+          .then((res) => {
+            this.products = res.data;
+          }).catch((e) => console.log(e));
+      }
+    },
+    mounted() {
+      this.getProducts();
+    }
+  }
+  </script>
+  
+  <style>
+  /* CSSクラスはVueファイル内に記述 */
+  .card-title, .card-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  </style>
+  

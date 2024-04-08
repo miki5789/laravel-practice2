@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Events\QueryExecuted;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \DB::listen(function (QueryExecuted $query) {
+            $sql = $query->connection
+                ->getQueryGrammar()
+                ->substituteBindingsIntoRawSql(
+                    $query->sql,
+                    $query->bindings
+                );
+            \Log::info('[' . $query->time . ' ms] ' . $sql);
+        });
     }
 }

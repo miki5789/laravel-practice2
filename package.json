@@ -16,6 +16,7 @@
         "vue": "^3.2.37"
     },
     "dependencies": {
-        "vue-router": "^3.0"
+        "@tabler/icons": "^3.1.0",
+        "vue-router": "^4.0.13"
     }
 }

@@ -6,26 +6,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductMaster extends Model
+class ProductDetailMaster extends Model
 {
-    protected $table = 'product_master';
+    protected $table = 'product_detail_master';
     //use HasApiTokens, HasFactory, Notifiable;
-
+ 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    
-    public function productDetailMaster()
-    {
-        return $this->hasMany(ProductDetailMaster::class, 'product_master_id', 'product_master_id');
-    }   
-
     protected $fillable = [
-        'product_name',
-        'brand',
-        'category',
+        'product_id',
+        'color',
+        'price',
+        'quantity',
+        'product_master_id',
         'delete_flg',
         'updated_at',
         'created_at'
