@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 
 class ProductDetailMasterSeeder extends Seeder
 {
-    return $this->belongsTo('App\User');
+    //return $this->belongsTo('App\User');
     /**
      * Run the database seeds.
      */

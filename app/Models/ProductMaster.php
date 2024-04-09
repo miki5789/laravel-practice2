@@ -22,7 +22,18 @@ class ProductMaster extends Model
         return $this->hasMany(ProductDetailMaster::class, 'product_master_id', 'product_master_id');
     }   
 
-    protected $fillable = [
+    public function productImageMaster()
+    {
+        return $this->hasManyThrough(
+            'App\Models\ProductImageMaster',
+            'App\Models\ProductDetailMaster',
+            'product_master_id', // ProductDetailMaster での外部キー
+            'product_id', // ProductImageMaster での外部キー
+            'product_master_id', // ProductMaster のローカルキー
+            'product_id'  // ProductDetailMaster のローカルキー
+        );
+    }
+    protected $fillable = [ 
         'product_name',
         'brand',
         'category',

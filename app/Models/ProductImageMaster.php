@@ -6,9 +6,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductDetailMaster extends Model
+class ProductImageMaster extends Model
 {
-    protected $table = 'product_detail_master';
+    protected $table = 'product_image_master';
     //use HasApiTokens, HasFactory, Notifiable;
  
     /**
@@ -16,17 +16,12 @@ class ProductDetailMaster extends Model
      *
      * @var array<int, string>
      */
-    public function productImageMaster()
-    {
-        return $this->hasMany(ProductImageMaster::class, 'product_id', 'product_id');
-    }
-
     protected $fillable = [
+        'product_image_path_id',
         'product_id',
-        'color',
-        'price',
-        'quantity',
-        'product_master_id',
+        'image_path1',
+        'image_path2',
+        'image_path3',
         'delete_flg',
         'updated_at',
         'created_at'
