@@ -11,14 +11,15 @@ class ProductImageMasterSeeder extends Seeder
     /**
      * Run the database seeds.
      */
+    //商品番号_画像ナンバーなので
     public function run(): void
     {
-        for ($i = 1; $i <= 8; $i++) {   
+        for ($i = 0; $i <= 8; $i++) {   
             ProductImageMaster::create([
                 'product_id' => $i,
-                'image_path1' => "/img" . "/" . $i . "_" . "1.png",
-                'image_path2' => "/img" . "/" . $i . "_" . "2.png",
-                'image_path3' => "/img" . "/" . $i . "_" . "3.png", 
+                'image_path1' => "/images" . "/" . $i . "_" . "1.png",
+                'image_path2' => "/images" . "/" . $i . "_" . "2.png",
+                'image_path3' => "/images" . "/" . $i . "_" . "3.png", 
                 'delete_flg' => false,
             ]);
         }

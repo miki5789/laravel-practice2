@@ -20,6 +20,11 @@ class ProductDetailMaster extends Model
     {
         return $this->hasMany(ProductImageMaster::class, 'product_id', 'product_id');
     }
+    
+    public function productMaster()
+    {
+        return $this->belongsTo(ProductMaster::class, 'product_master_id', 'product_master_id');
+    }
 
     protected $fillable = [
         'product_id',

@@ -20,7 +20,8 @@ class ProductMaster extends Model
     public function productDetailMaster()
     {
         return $this->hasMany(ProductDetailMaster::class, 'product_master_id', 'product_master_id');
-    }   
+    }
+  
 
     public function productImageMaster()
     {
@@ -33,6 +34,7 @@ class ProductMaster extends Model
             'product_id'  // ProductDetailMaster のローカルキー
         );
     }
+
     protected $fillable = [ 
         'product_name',
         'brand',

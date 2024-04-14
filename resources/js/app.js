@@ -12,6 +12,7 @@ import TaskShowComponent from "./components/TaskShowComponent.vue";
 import TaskCreateComponent from "./components/TaskCreateComponent.vue";
 import TaskEditComponent from "./components/TaskEditComponent.vue";
 import ProductListComponent from "./components/ProductListComponent.vue";
+import ProductDetailComponent from "./components/ProductDetailComponent.vue";
 import './bootstrap';
 
 
@@ -47,14 +48,16 @@ const router = createRouter({
             name: 'product.index',
             component: ProductListComponent
         },
+        {
+            path: '/detail/:product_master_id',
+            name: 'product.detail',
+            component: ProductDetailComponent
+        },
     ]
 });
 
 const app = createApp();
 app.use(router);
-//Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 app.component('header-component', HeaderComponent);
 
-import ExampleComponent from './components/ExampleComponent.vue';
-app.component('example-component', ExampleComponent);
 app.mount('#app');

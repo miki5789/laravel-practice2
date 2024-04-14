@@ -4,8 +4,8 @@
             <nav class="navbar navbar-dark">
                 <span class="navbar-brand mb-0 h1">AMOZONA</span>
                 <div>
-                    <router-link :to="{ name: 'task.list' }">
-                        <img src="assets('icon/cart.svg')" alt="Logo" />
+                    <router-link :to="{ name: 'product.index' }">
+                        <img :src="'images/icon/cart.svg'" alt="Logo" />
                     </router-link>
                 </div>
             </nav>
