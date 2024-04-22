@@ -18,6 +18,7 @@ class ProductController extends BaseController
     {
         $products = ProductMaster::with([
             'ProductDetailMaster' => function ($query) {
+                $query->where('quantity', '>=', 1);
                 $query->orderBy('product_id', 'asc');
             },
             'ProductImageMaster' => function ($query) {
@@ -27,19 +28,50 @@ class ProductController extends BaseController
         return $products;
     }
 
-    public function detail($product_id)
+    /*
+    public function detail($product_master_id, $product_id)
     {
-        console.log($product_id);
-        $details = ProductDetailMaster::with(['productMaster', 'productImageMaster'])
-            ->where('product_master_id', $product_master_id)
-            ->get();
-        //$details = ProductDetailMaster::with('productDetailMaster', 'productImageMaster');
-
-        //console.log($product_master_id);
-
-        return $details;
+        
+        $products = ProductDetailMaster::with([
+            'ProductMaster' => function ($query) {
+                $query->where('product_master_id', $product_master_id);
+            },
+            
+            'ProductImageMaster' => function ($query) {
+                $query->where('product_master_id', $product_master_id);
+                $query->orderBy('product_image_path_id', 'asc');
+            },
+        ])->get();
+        return $products;
 
     }
+    */
+    
+    public function detail($product_master_id)
+    {
+        $details = ProductDetailMaster::with([
+            'ProductImageMaster' => function ($query) {
+                $query->orderBy('product_image_path_id', 'asc');
+            },
+            'ProductMaster' => function ($query) use ($product_master_id) {
+                $query->where('product_master_id', $product_master_id);
+            }
+        ])->whereHas('ProductMaster', function ($query) use ($product_master_id) {
+            $query->where('product_master_id', $product_master_id);
+        })
+        ->get();
+    
+        // 結果のフィルタリングして、それぞれのProductDetailMasterに対応するProductImageMasterのデータのみ取得
+        foreach ($details as $detail) {
+            $detail->productImageMaster = $detail->productImageMaster->filter(function ($image) use ($detail) {
+                return $image->product_id == $detail->product_id;
+            });
+        }
+    
+        return $details;
+    }
+    
+    
 }
 
 

@@ -30,4 +30,6 @@ Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('task.d
 
 
 Route::get('/index', [ProductController::class, 'index'])->name('product.index');
+//Route::get('/detail/{prouct_master_id}/{product_id}', [ProductController::class, 'detail'])->name('product.detail');
 Route::get('/detail/{prouct_master_id}', [ProductController::class, 'detail'])->name('product.detail');
+Route::get('/cart', [CartController::class, 'cart'])->name('cart');

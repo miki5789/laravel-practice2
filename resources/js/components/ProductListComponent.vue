@@ -4,14 +4,19 @@
       <div class="row">
 
         <div v-for="(product, index) in products" :key="index" class="col-md-3 mb-4">
-          <router-link :to="{name: 'product.detail', params: {product_id: product.product_detail_master[0].product_id}}">
-          <img :src="(product.product_image_master.length > 0 && product.product_image_master[0].image_path1) ? product.product_image_master[0].image_path1 : '/images/1_1.png'" alt="test" class="img-fluid">
-          <h5 class="text-truncate mt-2">{{ product.product_name }}</h5>
-        </router-link>
+          <p>Product ID Check: {{ product.product_detail_master.length > 0 ? product.product_detail_master[0].product_id : 'No Product ID' }}</p>
+          <router-link :to="{name: 'product.detail', params: {product_master_id: product.product_master_id}}" class="product-link">
+            <img :src="(product.product_image_master.length > 0 && product.product_image_master[0].image_path1) ? product.product_image_master[0].image_path1 : '/images/1_1.png'" alt="test" class="img-fluid">
+            <h5 class="text-truncate mt-2">{{ product.product_name }}</h5>
+          </router-link>
 
-        <!-- 価格情報の表示（オプション） -->
-        <p>{{ product.product_detail_master.length > 0 && product.product_detail_master[0].price ? `¥${formatPrice(product.product_detail_master[0].price)}` : '-' }}</p>
-
+          <!-- 価格情報の表示（オプション） -->
+          <p>{{ product.product_detail_master.length > 0 && product.product_detail_master[0].price ? `¥${formatPrice(product.product_detail_master[0].price)}` : '-' }}</p>
+          <p>{{ product.product_detail_master.length > 0 && product.product_detail_master[0].product_id ? product.product_detail_master[0].product_id : 0 }}</p>
+          <ChildComponent
+            v-if="product.product_detail_master && product.product_detail_master.length > 0 && product.product_detail_master[0].product_id"
+            :product_id="product.product_detail_master[0].product_id" 
+          />
         </div>
       </div>
     </div>

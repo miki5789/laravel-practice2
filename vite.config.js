@@ -32,7 +32,7 @@ export default defineConfig({
         host: true,
         hmr: {
             clientPort: 5173,
-            host: 'localhost',
+            host: '127.0.0.1',
         }
     },
 });

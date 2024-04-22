@@ -13,6 +13,7 @@ import TaskCreateComponent from "./components/TaskCreateComponent.vue";
 import TaskEditComponent from "./components/TaskEditComponent.vue";
 import ProductListComponent from "./components/ProductListComponent.vue";
 import ProductDetailComponent from "./components/ProductDetailComponent.vue";
+import CartComponent from "./components/CartComponent.vue";
 import './bootstrap';
 
 
@@ -51,8 +52,15 @@ const router = createRouter({
         {
             path: '/detail/:product_master_id',
             name: 'product.detail',
-            component: ProductDetailComponent
+            component: ProductDetailComponent,
+            props: route => ({ product_id: Number(route.params.product_master_id) }),
         },
+        {
+            path: '/cart',
+            name: 'cart',
+            component: CartComponent,
+            props: true // ルートパラメータをpropsとして受け取る。なのでここで定義しなくてよし
+          },
     ]
 });
 

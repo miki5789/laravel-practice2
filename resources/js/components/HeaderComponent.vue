@@ -2,9 +2,11 @@
     <div class="container-fluid bg-dark mb-3">
         <div class="container">
             <nav class="navbar navbar-dark">
-                <span class="navbar-brand mb-0 h1">AMOZONA</span>
+                <router-link :to="{ name: 'product.index' }" class="navbar-brand mb-0 h1">
+                    AMOZONA
+                </router-link>
                 <div>
-                    <router-link :to="{ name: 'product.index' }">
+                    <router-link :to="{ name: 'cart' }">
                         <img :src="'images/icon/cart.svg'" alt="Logo" />
                     </router-link>
                 </div>
