@@ -10,6 +10,8 @@
       <h3>{{ selectedDetail ? selectedDetail.color : 'Product color is not available' }}</h3>
       <h2 v-if="selectedDetail">¥{{ formatPrice(selectedDetail.price) }}</h2>
 
+
+
       <div class="row">
         <div v-for="(detail, index) in details" :key="index" class="col-md-3 mb-4">
           <img :src="detail.product_image_master[0].image_path1" :alt="detail.color" :title="detail.color" class="img-button" @click="selectDetailByProductId(detail.product_id)">
@@ -34,36 +36,32 @@
 
 <script>
 export default {
-  props:['product_id'],
-    setup(props) {
-    // prop受け取ってるか確認
-    console.log(props.product_id)
-  },
   data() {
     return {
-    //プルダウン選択個数デフォルト値
-    selectedQuantity: 1,
-    details: [],
-    //選択カラーデフォルト値
-    selectedDetail: {
-      product_id: 0,
-      product_master_id: 0,
-      color: '',
-      price: 0,
-      quantity: 0,
-
-      product_master:{
-        product_master_id: 0,
-        product_name: '',
-      },
-      product_image_master:[{
+      //プルダウン選択個数デフォルト値
+      selectedQuantity: 1,
+      details: [],
+      //選択カラーデフォルト値
+      selectedDetail: {
         product_id: 0,
-        image_path1: '',
-        image_path2: '',
-        image_path3: '',
-      }]
-    } // 選択された詳細を保持するためのデータプロパティ
-  }
+        product_master_id: 0,
+        color: '',
+        price: 0,
+        quantity: 0,
+
+        product_master:{
+          product_master_id: 0,
+          product_name: '',
+        },
+        product_image_master:[{
+          product_id: 0,
+          image_path1: '',
+          image_path2: '',
+          image_path3: '',
+        }]
+      },
+      errorMessage: ''
+    }
   },
   methods: {
     async getDetails() {
@@ -78,13 +76,14 @@ export default {
     },
     selectDetail() {
     // product_id に基づいて該当する詳細を検索
-      console.log("Searching for product_id:", this.product_id); // デバッグ: 探しているproduct_idの表示
-      this.selectedDetail = this.details.find(detail => detail.product_id === this.product_id);
+      console.log("Searching for product_id:", this.details[0].product_id); // デバッグ: 探しているproduct_idの表示
+      this.selectedDetail = this.details.find(detail => detail.product_id === this.details[0].product_id);
       console.log("Selected quantity:", this.selectedDetail.quantity);
       console.log("Selected detail:", this.selectedDetail);
     },
     selectDetailByProductId(productId) {
       this.selectedDetail = this.details.find(detail => detail.product_id === productId);
+      console.log("selected product_id:", this.selectedDetail.product_id);
     },
     // 価格をフォーマットするメソッドを追加
     formatPrice(value) {
@@ -101,15 +100,32 @@ export default {
       //ブロックスコープのローカル変数を宣言
       //let で宣言された変数は、その変数が宣言されたブロック、式、または文の中でのみアクセス可能
       let cart = cartData ? JSON.parse(cartData) : [];
-      if (!Array.isArray(cart)) {
-        cart = []; // カートデータが配列でない場合は空の配列にリセット
+
+      // 既存の商品を探す
+      const existingItemIndex = cart.findIndex(item => item.productDetails.product_id === this.selectedDetail.product_id);
+
+    if (existingItemIndex !== -1) {
+      // 既存の商品の数量を更新
+      const existingItem = cart[existingItemIndex];
+      let newQuantity = existingItem.selectedQuantity + this.selectedQuantity;
+      
+      if (newQuantity > this.selectedDetail.quantity) {
+        existingItem.selectedQuantity = this.selectedDetail.quantity; // 在庫数に合わせる
+        this.errorMessage = `最大選択できる個数は${this.selectedDetail.quantity}個です。`; // エラーメッセージを設定
+      } else {
+        existingItem.selectedQuantity = newQuantity;
       }
-      // 新しいアイテムをカートに追加
+    } else {
+      // 新しい商品をカートに追加
       cart.push(newItem);
+    }
 
       // カートを更新してセッションストレージに保存
       sessionStorage.setItem('cart', JSON.stringify(cart));
-
+      //エラーメッセージがあれば、セッションストレージに保存
+      if (this.errorMessage) {
+        sessionStorage.setItem('cartError', this.errorMessage);
+      }
       // カートページへナビゲート
       this.$router.push({ name: 'cart' });
   },

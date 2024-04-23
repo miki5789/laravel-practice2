@@ -33,3 +33,5 @@ Route::get('/index', [ProductController::class, 'index'])->name('product.index')
 //Route::get('/detail/{prouct_master_id}/{product_id}', [ProductController::class, 'detail'])->name('product.detail');
 Route::get('/detail/{prouct_master_id}', [ProductController::class, 'detail'])->name('product.detail');
 Route::get('/cart', [CartController::class, 'cart'])->name('cart');
+
+Route::post('/user/input', [UserController::class, 'input'])->name('user.input');

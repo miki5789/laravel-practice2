@@ -34,10 +34,17 @@
         <p>カートに商品がありません。</p>
       </div>
 
+      <div class="row justify-content-end">
+          <div class="col-md-4 text-right">
+            <h4>小計: ¥{{ formatPrice(subtotal) }}</h4>
+          </div>
+      </div>
 
       <div class="d-flex justify-content-end mt-3">
         <router-link to="/index" class="btn btn-link me-3">買い物を続ける</router-link>
-        <button class="btn btn-primary" @click="goToShipping">配送情報入力</button>
+        <router-link :to="{ name: 'user.input' }" tag="button" class="btn btn-primary">
+          配送情報入力
+        </router-link>
       </div>
     </div>
   </div>
@@ -53,30 +60,24 @@ export default {
       errorMessage: '',
     };
   },
+  computed: {
+    subtotal() {
+      return this.cart.reduce((acc, item) => acc + item.productDetails.price * item.selectedQuantity, 0);
+    }
+  },
   mounted() {
     this.loadCart();
+    this.loadErrorMessage();
+  },
+  watch: { //cart配列の変更を監視、変更がある度にセッションストレージを更新
+    cart: {
+      handler() {
+        this.updateCart();
+      },
+      deep: true
+    }
   },
   methods: {
-    addToCart(productToAdd) {
-    const existingItem = this.cart.find(item => item.productDetails.product_id === productToAdd.product_id);
-
-    if (existingItem) {
-      const newQuantity = existingItem.selectedQuantity + productToAdd.selectedQuantity;
-      if (newQuantity > productToAdd.productDetails.quantity) {
-        existingItem.selectedQuantity = productToAdd.productDetails.quantity;
-        this.errorMessage = `最大選択できる個数は${productToAdd.productDetails.quantity}個です。`;
-      } else {
-        existingItem.selectedQuantity = newQuantity;
-      }
-      } else {
-        if (productToAdd.selectedQuantity > productToAdd.productDetails.quantity) {
-          productToAdd.selectedQuantity = productToAdd.productDetails.quantity;
-          alert(`最大選択できる個数は${productToAdd.productDetails.quantity}個です。`);
-        }
-        this.cart.push(productToAdd);
-      }
-      sessionStorage.setItem('cart', JSON.stringify(this.cart));
-    },
     loadCart() { //カート追加
       const cartData = sessionStorage.getItem('cart');
       //cartDataがあればjsonよみこみ
@@ -87,6 +88,14 @@ export default {
         this.cart = []; 
       }
     },
+    loadErrorMessage() {
+      const errorMessage = sessionStorage.getItem('cartError');
+      if (errorMessage) {
+        this.errorMessage = errorMessage;
+        sessionStorage.removeItem('cartError');  // メッセージ表示後は削除
+      }
+      console.log(errorMessage);
+    },
     formatPrice(value) {
       return Number(value).toLocaleString();
     },
@@ -95,6 +104,9 @@ export default {
       this.cart.splice(index, 1);
       sessionStorage.setItem('cart', JSON.stringify(this.cart));
   },
+  updateCart() {
+      sessionStorage.setItem('cart', JSON.stringify(this.cart));
+    }
   }
 }
 </script>
@@ -120,4 +132,6 @@ export default {
   flex-direction: column;
   justify-content: space-between; /* 内容を均等に分布させる */
 }
+
+
 </style>
