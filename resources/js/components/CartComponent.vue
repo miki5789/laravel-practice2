@@ -31,18 +31,19 @@
         </div>
       </div>
       <div v-else>
-        <p>カートに商品がありません。</p>
+        <h2>カートに商品がありません。</h2>
       </div>
 
       <div class="row justify-content-end">
-          <div class="col-md-4 text-right">
+          <div v-if="cart.length" class="col-md-4 text-right">
             <h4>小計: ¥{{ formatPrice(subtotal) }}</h4>
+            <p>check: {{ cart.length }}</p>
           </div>
       </div>
 
       <div class="d-flex justify-content-end mt-3">
         <router-link to="/index" class="btn btn-link me-3">買い物を続ける</router-link>
-        <router-link :to="{ name: 'user.input' }" tag="button" class="btn btn-primary">
+        <router-link :to="{ name: 'user.input' }" class="btn btn-primary">
           配送情報入力
         </router-link>
       </div>

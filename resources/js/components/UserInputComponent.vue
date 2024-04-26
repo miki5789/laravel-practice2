@@ -1,4 +1,5 @@
 <template>
+
   <div class="container mt-3">
     <div class="row">
       <div>
@@ -28,23 +29,25 @@
       </div>
 
       <div class="label">
-        <label for="post_code">〒（ハイフンなし・半角数字のみ）
-        </label>
+        <label for="post_code">〒（ハイフンなし・半角数字のみ）</label>
       </div>
-      <div class="input-row">
-        <input type="number" v-model="post_code">
 
-        <router-link :to="{ name: 'user.input' }" tag="button" class="btn btn-secondary">
+      <div class="input-row">
+        <input type="text" v-model="post_code">
+        <button @click="fetchAddress" class="btn btn-secondary">
           住所自動入力
-        </router-link>
+        </button>
       </div>
 
       <div class="label">
         <label for="prefecture">都道府県</label>
         <label for="city">市町村</label>
       </div>
-      <div class="input-row">
-        <input type="text" v-model="prefecture">
+      <div class="input-row d-flex">
+        <select v-if="prefectures" class="form-select" v-model="prefecture">
+          <option :value="default">-</option>
+          <option v-for="prefecture in prefectures" :key="prefecture.prefecture_code" :value="prefecture.prefecture_name">{{ prefecture.prefecture_name }}</option>
+        </select>
         <input type="text" v-model="city">
       </div>
 
@@ -68,27 +71,64 @@
         <router-link to="/cart" class="btn btn-link me-3">戻る</router-link>
         <button class="btn btn-primary" @click="validate">進む</button>
       </div>
+
+      <input name="postcode" @change="fetchAddress">
+      <input name="address">
     </div>
   </div>
 </template>
 
+<script setup>
+    import { Core as YubinBangoCore } from "yubinbango-core2";
 
+// 数字を文字に変換 第１引数が郵便番号
+// 第２がコールバックで引数に住所
+const fetchAddress = () => {
+    new YubinBangoCore(String(form.postcode), (value) => {
+    form.address = value.region + value.locality + value.street
+    })
+}
+</script>
 <script>
 export default {
+
   data() {
     return {
+      prefectures: [],
+      prefecture: '',
       surname: '',
       given_name: '',
       surname_kana: '',
       given_name_kana: '',
       post_code: '',
-      errorMessage: '',
+      errorMessage: [],
       email: '',
     };
   },
   mounted() {
+    this.getPrefectures();
+    
   },
   methods: {
+    getPrefectures() {
+      axios.get('/api/user/input')
+        .then((res) => {
+          this.prefectures = res.data;
+          //console.log("test", this.prefectures[0].prefecture_name)
+      }).catch((e) => console.log(e));
+    },
+    
+    fetchAddress() {
+    axios.get(`/api/user/post_code/search/${this.post_code}`)
+      .then(response => {
+        // 成功した場合の処理
+        console.log('Address data:', response.data);
+      })
+      .catch(error => {
+        // エラー処理
+        console.error('API error:', error);
+      });
+  },
     validate() {
       let valid = true;
       let errors = [];
@@ -114,7 +154,7 @@ export default {
         errors.push('有効な郵便番号を半角・ハイフンなしで入力してください。');
         valid = false;
       }
-      if (!this.prefecture || !this.city ||  !this.street) {
+      if (!this.city ||  !this.street || this.prefecture == "-") {
         errors.push('住所が入力されていません。');
         valid = false;
       }
@@ -139,7 +179,7 @@ export default {
     // 例: 次のページへのルーティングなど
       this.$router.push('/next');
   },
-  async validatePostCode(post_code) {
+  validatePostCode(post_code) {
     console.log(post_result);
     axios.get(`/api/user/post_code/search`)
       .then((res) => {
@@ -147,12 +187,25 @@ export default {
         console.log(this.post_result);
       }).catch((e) => console.log(e));
     },
+  async searchPostCode(post_code) {
+  console.log(post_result);
+  axios.get(`/api/user/post_code/search`)
+    .then((res) => {
+      this.post_result = res.data;
+      console.log(this.post_result);
+    }).catch((e) => console.log(e));
+  },
+
+
   }
+  
 }
 </script>
 
 
 <style>
+
+
 .input-row {
   display: flex;
   align-items: center; /* 中央揃え */
@@ -168,5 +221,11 @@ input[type="text"], input[type="number"] {
   margin-right: 20px; /* 入力ボックスの右マージン */
 }
 
+.form-select {
+  width: 150px; /* 幅を指定 */
+  padding: 0.25rem 0.5rem; /* パディングを調整 */
+  font-size: 0.875rem; /* フォントサイズを小さく */
+  margin-right: 20px; /* ラベルの右マージン */
+}
 
 </style>

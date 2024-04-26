@@ -17,10 +17,9 @@ class PrefectureMaster extends Model
      * @var array<int, string>
      */
     
-
     protected $fillable = [ 
-        'prerecture_name',
-        'prerecture_id',
+        'prefecture_name',
+        'prefecture_code',
         'delete_flg',
         'updated_at',
         'created_at'

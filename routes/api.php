@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailController;
-
+use App\Http\Controllers\AddressController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -35,3 +35,6 @@ Route::get('/detail/{prouct_master_id}', [ProductController::class, 'detail'])->
 Route::get('/cart', [CartController::class, 'cart'])->name('cart');
 
 Route::post('/user/input', [UserController::class, 'input'])->name('user.input');
+Route::get('/user/input', [AddressController::class, 'prefectures'])->name('prefectures.show');
+
+Route::get('/user/post_code/search/{postcode}', [AddressController::class, 'search'])->name('postcode.search');

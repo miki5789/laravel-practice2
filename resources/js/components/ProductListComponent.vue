@@ -13,10 +13,6 @@
           <!-- 価格情報の表示（オプション） -->
           <p>{{ product.product_detail_master.length > 0 && product.product_detail_master[0].price ? `¥${formatPrice(product.product_detail_master[0].price)}` : '-' }}</p>
           <p>{{ product.product_detail_master.length > 0 && product.product_detail_master[0].product_id ? product.product_detail_master[0].product_id : 0 }}</p>
-          <ChildComponent
-            v-if="product.product_detail_master && product.product_detail_master.length > 0 && product.product_detail_master[0].product_id"
-            :product_id="product.product_detail_master[0].product_id" 
-          />
         </div>
       </div>
     </div>

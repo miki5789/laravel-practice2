@@ -62,9 +62,15 @@ const router = createRouter({
           },
           {
             path: '/user/input',
-            name: 'user.input',
+            name: 'prefectures.show',
             component: UserInputComponent,
           },
+          {
+            path: '/user/post_code/search/:postcode',
+            name: 'postcode.search',
+            component: UserInputComponent,
+          },
+          
     ]
 });
 

@@ -2,20 +2,22 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\PrefectureMaster;
+use App\Models\PostCodeMaster;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-// database/seeders/PrefecturesTableSeeder.php
-class PrefectureMasterSeeder extends Seeder
+// database/seeders/PostCodesTableSeeder.php
+class PostCodeMasterSeeder extends Seeder
 {
     function run()
     {
-        $file = fopen(base_path('database/postcode/prefecture.csv'), 'r');
+        $file = fopen(base_path('database/postcode/postcode.txt'), 'r');
 
         while (($data = fgetcsv($file)) !== FALSE) {
-            PrefectureMaster::create([
-                'prefecture_name' => $data[1],
-                'prefecture_id' => $data[0],
+            PostCodeMaster::create([
+                'post_code' => $data[0],
+                'prefecture_code' => $data[1],
+                'city_code' => $data[2],
+                'region_name' => $data[3]+$data[4],
                 'delete_flg' => false,
             ]);
         }
