@@ -6,6 +6,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\OrderController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -30,11 +31,10 @@ Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('task.d
 
 
 Route::get('/index', [ProductController::class, 'index'])->name('product.index');
-//Route::get('/detail/{prouct_master_id}/{product_id}', [ProductController::class, 'detail'])->name('product.detail');
-Route::get('/detail/{prouct_master_id}', [ProductController::class, 'detail'])->name('product.detail');
-Route::get('/cart', [CartController::class, 'cart'])->name('cart');
+Route::get('/product/detail/{prouct_master_id}', [ProductController::class, 'detail'])->name('product.detail');
+//Route::get('/cart', [CartController::class, 'cart'])->name('cart');
 
 Route::post('/user/input', [UserController::class, 'input'])->name('user.input');
 Route::get('/user/input', [AddressController::class, 'prefectures'])->name('prefectures.show');
 
-Route::get('/user/post_code/search/{postcode}', [AddressController::class, 'search'])->name('postcode.search');
+Route::post('/product/order/confirm', [OrderController::class, 'confirm'])->name('order.confirm');

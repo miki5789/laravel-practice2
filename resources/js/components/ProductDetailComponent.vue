@@ -10,8 +10,6 @@
       <h3>{{ selectedDetail ? selectedDetail.color : 'Product color is not available' }}</h3>
       <h2 v-if="selectedDetail">¥{{ formatPrice(selectedDetail.price) }}</h2>
 
-
-
       <div class="row">
         <div v-for="(detail, index) in details" :key="index" class="col-md-3 mb-4">
           <img :src="detail.product_image_master[0].image_path1" :alt="detail.color" :title="detail.color" class="img-button" @click="selectDetailByProductId(detail.product_id)">
@@ -20,8 +18,8 @@
 
       <div class="row">
         <!-- プルダウンメニュー -->
-        <select v-if="selectedDetail.quantity" class="form-select" v-model="selectedQuantity">
-          <option v-for="n in Math.min(selectedDetail.quantity, 9)" :key="n" :value="n">{{ n }}</option>
+        <select v-if="selectedDetail.quantity > 0" class="form-select" v-model="selectedQuantity">
+          <option v-for="n in Math.min(parseInt(selectedDetail.quantity), 10)" :key="n" :value="n">{{ n }}</option>
         </select>
         <!-- カートに入れるボタン -->
         <button class="btn btn-primary" @click="addToCart">カートに入れる</button>
@@ -35,12 +33,14 @@
 
 
 <script>
+import { EventBus } from '../eventBus';
 export default {
   data() {
     return {
       //プルダウン選択個数デフォルト値
       selectedQuantity: 1,
       details: [],
+      
       //選択カラーデフォルト値
       selectedDetail: {
         product_id: 0,
@@ -67,7 +67,7 @@ export default {
     async getDetails() {
       // Vue Routerからパラメータを取得
       const product_master_id = this.$route.params.product_master_id;
-      await axios.get(`/api/detail/${product_master_id}`)
+      await axios.get(`/api/product/detail/${product_master_id}`)
         .then((res) => {
             this.details = res.data;
             this.selectDetail();
@@ -84,6 +84,8 @@ export default {
     selectDetailByProductId(productId) {
       this.selectedDetail = this.details.find(detail => detail.product_id === productId);
       console.log("selected product_id:", this.selectedDetail.product_id);
+      console.log("selected color:", this.selectedDetail.color);
+      console.log("selected productquantity:", this.selectedDetail.quantity);
     },
     // 価格をフォーマットするメソッドを追加
     formatPrice(value) {
@@ -104,21 +106,21 @@ export default {
       // 既存の商品を探す
       const existingItemIndex = cart.findIndex(item => item.productDetails.product_id === this.selectedDetail.product_id);
 
-    if (existingItemIndex !== -1) {
-      // 既存の商品の数量を更新
-      const existingItem = cart[existingItemIndex];
-      let newQuantity = existingItem.selectedQuantity + this.selectedQuantity;
-      
-      if (newQuantity > this.selectedDetail.quantity) {
-        existingItem.selectedQuantity = this.selectedDetail.quantity; // 在庫数に合わせる
-        this.errorMessage = `最大選択できる個数は${this.selectedDetail.quantity}個です。`; // エラーメッセージを設定
+      if (existingItemIndex !== -1) {
+        // 既存の商品の数量を更新
+        const existingItem = cart[existingItemIndex];
+        let newQuantity = existingItem.selectedQuantity + this.selectedQuantity;
+        
+        if (newQuantity > this.selectedDetail.quantity) {
+          existingItem.selectedQuantity = this.selectedDetail.quantity; // 在庫数に合わせる
+          this.errorMessage = `最大選択できる個数は${this.selectedDetail.quantity}個です。`; // エラーメッセージを設定
+        } else {
+          existingItem.selectedQuantity = newQuantity;
+        }
       } else {
-        existingItem.selectedQuantity = newQuantity;
+        // 新しい商品をカートに追加
+        cart.push(newItem);
       }
-    } else {
-      // 新しい商品をカートに追加
-      cart.push(newItem);
-    }
 
       // カートを更新してセッションストレージに保存
       sessionStorage.setItem('cart', JSON.stringify(cart));
@@ -126,15 +128,17 @@ export default {
       if (this.errorMessage) {
         sessionStorage.setItem('cartError', this.errorMessage);
       }
+      //カート点数表記を更新
+      const totalQuantity = cart.reduce((sum, item) => sum + item.selectedQuantity, 0);
+      EventBus.emit('updateCartItemCount', totalQuantity);
       // カートページへナビゲート
       this.$router.push({ name: 'cart' });
-  },
+    },
   },
   async mounted() {
     console.log('Received product_id on mount:', this.product_id);
-    await this.getDetails(); // 最初の getDetails 呼び出し
-    console.log('test:');
-    await this.getDetails(); // 次の getDetails 呼び出し
+    await this.getDetails();
+    
   }
 }
 
@@ -164,11 +168,5 @@ export default {
 
 .img-button:hover {
   transform: scale(1.05); /* ホバー時に画像を少し大きくする */
-}
-
-.col-md-3 {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* 内容を均等に分布させる */
 }
 </style>

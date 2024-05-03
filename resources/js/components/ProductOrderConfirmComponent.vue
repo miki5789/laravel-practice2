@@ -2,7 +2,8 @@
   <div class="container mt-3">
     <div class="row">
       <div>
-        <h1>ショッピングカート</h1>
+        <h1>ご注文内容確認</h1>
+        <hr> <!-- 区切り線 -->
       </div>
       <div v-if="cart.length">
         <div v-for="(item, index) in cart" :key="index">
@@ -16,36 +17,23 @@
 
               <!-- プルダウンメニュー -->
               <div class="d-flex align-items-center">
-                <span>数量：</span>
-                <select v-if="item.selectedQuantity > 0" class="form-select" v-model="item.selectedQuantity">
-                  <option v-for="n in (item.productDetails.quantity > 9 ? 9 : item.productDetails.quantity)" :key="n" :value="n">{{ n }}</option>
-                </select>
-                <a href="#" @click="removeItem(index, $event)">削除</a>
-              </div>
-              <div v-if="errorMessage" class="alert alert-danger">
-                {{ errorMessage }}
+                <span>数量：{{ item.selectedQuantity }}</span>
               </div>
             </div>
           </div>
           <hr> <!-- 区切り線 -->
         </div>
       </div>
-      <div v-else>
-        <h2>カートに商品がありません。</h2>
-      </div>
 
       <div class="row justify-content-end">
           <div v-if="cart.length" class="col-md-4 text-right">
             <h4>小計: ¥{{ formatPrice(subtotal) }}</h4>
-            <p>check: {{ cart.length }}</p>
           </div>
       </div>
 
       <div class="d-flex justify-content-end mt-3">
-        <router-link to="/index" class="btn btn-link me-3">買い物を続ける</router-link>
-        <router-link :to="{ name: 'user.input' }" class="btn btn-primary">
-          配送情報入力
-        </router-link>
+        <button class="btn btn-primary" @click="goToCart">修正</button>
+        <button class="btn btn-primary" @click="purchase">購入</button>
       </div>
     </div>
   </div>
@@ -58,7 +46,6 @@ export default {
     return {
       cart: [],
       cartItem: null,
-      errorMessage: '',
     };
   },
   computed: {
@@ -68,15 +55,6 @@ export default {
   },
   mounted() {
     this.loadCart();
-    this.loadErrorMessage();
-  },
-  watch: { //cart配列の変更を監視、変更がある度にセッションストレージを更新
-    cart: {
-      handler() {
-        this.updateCart();
-      },
-      deep: true
-    }
   },
   methods: {
     loadCart() { //カート追加
@@ -89,24 +67,25 @@ export default {
         this.cart = []; 
       }
     },
-    loadErrorMessage() {
-      const errorMessage = sessionStorage.getItem('cartError');
-      if (errorMessage) {
-        this.errorMessage = errorMessage;
-        sessionStorage.removeItem('cartError');  // メッセージ表示後は削除
-      }
-      console.log(errorMessage);
-    },
     formatPrice(value) {
       return Number(value).toLocaleString();
     },
-    removeItem(index, event) {
-      event.preventDefault(); //デフォルト動作防止
-      this.cart.splice(index, 1);
-      sessionStorage.setItem('cart', JSON.stringify(this.cart));
-  },
-  updateCart() {
-      sessionStorage.setItem('cart', JSON.stringify(this.cart));
+    goToCart(){
+      this.$router.push('/product/cart');
+    },
+    purchase(){
+      // Vue.jsコンポーネント内
+    axios.post('/api/product/order/confirm', {
+      userData: JSON.parse(sessionStorage.getItem('userData')),
+      cartData: this.cart
+    })
+    .then(response => {
+        console.log("response:",response.data);
+    })
+    .catch(error => {
+        console.error("error:",error);
+    });
+      //this.$router.push('/user/complete');
     }
   }
 }

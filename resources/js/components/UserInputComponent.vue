@@ -5,7 +5,7 @@
       <div>
         <h2>お届け先の情報を入力してください。</h2>
       </div>
-      <div v-if="errorMessage" class="alert alert-danger">
+      <div v-if="errorMessage && errorMessage.length > 0" class="alert alert-danger">
         <div v-for="(error, index) in errorMessage" :key="index" class="col-md-3 mb-4">
           - {{ error }}
         </div>
@@ -45,7 +45,7 @@
       </div>
       <div class="input-row d-flex">
         <select v-if="prefectures" class="form-select" v-model="prefecture">
-          <option :value="default">-</option>
+          <option value="">選択してください</option>
           <option v-for="prefecture in prefectures" :key="prefecture.prefecture_code" :value="prefecture.prefecture_name">{{ prefecture.prefecture_name }}</option>
         </select>
         <input type="text" v-model="city">
@@ -68,34 +68,25 @@
       </div>
       
       <div class="d-flex justify-content-end mt-3">
-        <router-link to="/cart" class="btn btn-link me-3">戻る</router-link>
-        <button class="btn btn-primary" @click="validate">進む</button>
+        <button class="btn btn-primary" @click="cart">戻る</button>
+        <button class="btn btn-primary" @click="validate" :disabled="isDisabled">進む</button>
       </div>
-
-      <input name="postcode" @change="fetchAddress">
-      <input name="address">
     </div>
   </div>
 </template>
 
-<script setup>
-    import { Core as YubinBangoCore } from "yubinbango-core2";
 
-// 数字を文字に変換 第１引数が郵便番号
-// 第２がコールバックで引数に住所
-const fetchAddress = () => {
-    new YubinBangoCore(String(form.postcode), (value) => {
-    form.address = value.region + value.locality + value.street
-    })
-}
-</script>
 <script>
+import { Core as YubinBangoCore } from "yubinbango-core2";
 export default {
 
   data() {
     return {
       prefectures: [],
       prefecture: '',
+      city: '',
+      street: '',
+      room: '',
       surname: '',
       given_name: '',
       surname_kana: '',
@@ -103,11 +94,32 @@ export default {
       post_code: '',
       errorMessage: [],
       email: '',
+      defaulst: ''
     };
+  },
+  computed: {
+    isDisabled() {
+      // 全てのフィールドが非空の場合にのみボタンを活性化する
+      return !(this.surname && this.given_name && this.surname_kana && this.given_name_kana && this.prefecture && this.city && this.street && this.email);
+    }
   },
   mounted() {
     this.getPrefectures();
-    
+    // セッションストレージからデータを取得して自動入力
+    const userData = sessionStorage.getItem('userData');
+    if (userData) {
+      const parsedUserData = JSON.parse(userData);
+      this.surname = parsedUserData.surname || '';
+      this.given_name = parsedUserData.given_name || '';
+      this.surname_kana = parsedUserData.surname_kana || '';
+      this.given_name_kana = parsedUserData.given_name_kana || '';
+      this.post_code = parsedUserData.postcode || '';
+      this.prefecture = parsedUserData.prefecture || '';
+      this.city = parsedUserData.city || '';
+      this.street = parsedUserData.street || '';
+      this.room = parsedUserData.room || '';
+      this.email = parsedUserData.email || '';
+    }
   },
   methods: {
     getPrefectures() {
@@ -115,20 +127,22 @@ export default {
         .then((res) => {
           this.prefectures = res.data;
           //console.log("test", this.prefectures[0].prefecture_name)
+          //
       }).catch((e) => console.log(e));
     },
-    
+    // 数字を文字に変換 第１引数が郵便番号
+    // 第２がコールバックで引数に住所
     fetchAddress() {
-    axios.get(`/api/user/post_code/search/${this.post_code}`)
-      .then(response => {
-        // 成功した場合の処理
-        console.log('Address data:', response.data);
-      })
-      .catch(error => {
-        // エラー処理
-        console.error('API error:', error);
-      });
-  },
+        new YubinBangoCore(String(this.post_code), (address) => {
+            // 住所の形式に合わせて調整すること
+            
+            this.prefecture = address.region;
+            this.city = address.locality;
+            this.street = address.street;
+            
+            console.log(address)
+        });
+    },
     validate() {
       let valid = true;
       let errors = [];
@@ -176,26 +190,14 @@ export default {
       console.log(this.errorMessage);
     },
   goToNextStep() {
-    // 例: 次のページへのルーティングなど
-      this.$router.push('/next');
+    this.surname && this.given_name && this.surname_kana && this.given_name_kana && this.prefecture && this.city && this.street && this.email
+    sessionStorage.setItem('userData', JSON.stringify({ surname: this.surname, given_name: this.given_name, surname_kana: this.surname_kana, given_name_kana: this.given_name_kana, postcode: this.post_code, prefecture: this.prefecture, city: this.city, street: this.street, room: this.room, email: this.email }));
+    
+    this.$router.push('/user/confirm');
   },
-  validatePostCode(post_code) {
-    console.log(post_result);
-    axios.get(`/api/user/post_code/search`)
-      .then((res) => {
-        this.post_result = res.data;
-        console.log(this.post_result);
-      }).catch((e) => console.log(e));
-    },
-  async searchPostCode(post_code) {
-  console.log(post_result);
-  axios.get(`/api/user/post_code/search`)
-    .then((res) => {
-      this.post_result = res.data;
-      console.log(this.post_result);
-    }).catch((e) => console.log(e));
-  },
-
+  cart(){
+    this.$router.push('../cart')
+  }
 
   }
   

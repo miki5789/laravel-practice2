@@ -24,25 +24,6 @@ class ProductController extends BaseController
         ])->get();
         return $products;
     }
-
-    /*
-    public function detail($product_master_id, $product_id)
-    {
-        
-        $products = ProductDetailMaster::with([
-            'ProductMaster' => function ($query) {
-                $query->where('product_master_id', $product_master_id);
-            },
-            
-            'ProductImageMaster' => function ($query) {
-                $query->where('product_master_id', $product_master_id);
-                $query->orderBy('product_image_path_id', 'asc');
-            },
-        ])->get();
-        return $products;
-
-    }
-    */
     
     public function detail($product_master_id)
     {
@@ -67,7 +48,7 @@ class ProductController extends BaseController
     
         return $details;
     }
-    
+
     
 }
 

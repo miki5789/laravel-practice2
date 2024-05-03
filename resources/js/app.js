@@ -13,8 +13,11 @@ import TaskCreateComponent from "./components/TaskCreateComponent.vue";
 import TaskEditComponent from "./components/TaskEditComponent.vue";
 import ProductListComponent from "./components/ProductListComponent.vue";
 import ProductDetailComponent from "./components/ProductDetailComponent.vue";
-import CartComponent from "./components/CartComponent.vue";
+import ProductCartComponent from "./components/ProductCartComponent.vue";
 import UserInputComponent from "./components/UserInputComponent.vue";
+import UserConfirmComponent from "./components/UserConfirmComponent.vue";
+import ProductOrderConfirmComponent from "./components/ProductOrderConfirmComponent.vue";
+import UserCompleteComponent from "./components/UserComplete.vue";
 import './bootstrap';
 
 
@@ -51,14 +54,14 @@ const router = createRouter({
             component: ProductListComponent
         },
         {
-            path: '/detail/:product_master_id',
+            path: '/product/detail/:product_master_id',
             name: 'product.detail',
             component: ProductDetailComponent,
         },
         {
-            path: '/cart',
+            path: '/product/cart',
             name: 'cart',
-            component: CartComponent,
+            component: ProductCartComponent,
           },
           {
             path: '/user/input',
@@ -66,11 +69,19 @@ const router = createRouter({
             component: UserInputComponent,
           },
           {
-            path: '/user/post_code/search/:postcode',
-            name: 'postcode.search',
-            component: UserInputComponent,
+            path: '/user/confirm',
+            component: UserConfirmComponent,
           },
-          
+          {
+            path: '/product/order/confirm',
+            name: 'order.confirm',
+            component: ProductOrderConfirmComponent,
+          },
+          {
+            path: '/user/complete',
+            name: 'user.complete',
+            component: UserCompleteComponent,
+          },          
     ]
 });
 
