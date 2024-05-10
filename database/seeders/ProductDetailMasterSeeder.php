@@ -13,10 +13,10 @@ class ProductDetailMasterSeeder extends Seeder
      */
     public function run(): void
     {
-        $color = array("ブラック", "ブルー", "レッド");
-        $quantity = 1;
-        $price = 10000;
-        for ($i = 0; $i < 3; $i++) {
+        $color = array("カラー1", "カラー2", "カラー3");
+        $quantity = 2;
+        $price = 20000;
+        for ($i = 4; $i <= 9; $i++) {
             for ($j = 0; $j < 3; $j++) {
                     if ($quantity == 13){
                         $quantity = 1;

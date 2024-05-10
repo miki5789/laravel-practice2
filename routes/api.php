@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\OrderController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,3 +39,17 @@ Route::post('/user/input', [UserController::class, 'input'])->name('user.input')
 Route::get('/user/input', [AddressController::class, 'prefectures'])->name('prefectures.show');
 
 Route::post('/product/order/confirm', [OrderController::class, 'confirm'])->name('order.confirm');
+
+Route::get('/email_template/order_complete', [OrderController::class, 'sendOrderCompleteMail'])->name('email.send');
+/*
+Route::get('/email_template/{templateName}', function ($templateName) {
+    $template = EmailTemplate::where('template_name', $templateName)->firstOrFail();
+    return response()->json([
+        'title' => $template->title,
+        'body' => $template->body,
+    ]);
+});*/
+
+Route::post('/product/search', [ProductController::class, 'search'])->name('product.search');
+Route::get('/product/search', [ProductController::class, 'search'])->name('product.search');
+

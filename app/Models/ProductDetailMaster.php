@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProductDetailMaster extends Model
 {
     protected $table = 'product_detail_master';
+    protected $primaryKey = 'product_id';
     //use HasApiTokens, HasFactory, Notifiable;
  
     /**

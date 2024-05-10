@@ -1,10 +1,21 @@
 <template>
-    <div class="container-fluid bg-dark mb-3">
+    <div class="container-fluid custom-bg mb-3">
         <div class="container">
             <nav class="navbar navbar-dark">
                 <router-link :to="{ name: 'product.index' }" class="navbar-brand mb-0 h1">
                     AMOZONA
                 </router-link>
+                
+                <!-- 検索バー -->
+                
+                <form class="form-inline" @submit.prevent="searchProducts">
+                    <!-- Flexboxを使用して横並びにする -->
+                    <input v-model="searchKeyword" class="form-control search-input" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-light search-btn" type="submit">検索</button>
+                </form>
+
+
+                <!-- カートアイコン -->
                 <div class="cart-icon-wrapper">
                     <router-link :to="{ name: 'cart' }">
                         <img :src="'/images/icon/cart.svg'" alt="Cart" class="cart-icon"/>
@@ -24,6 +35,7 @@ export default {
         return {
             totalQuantity: 0,
             cartData: [],
+            searchKeyword: '',
         };
     },
     created() {
@@ -36,15 +48,32 @@ export default {
             // カート内の商品の総数量を計算
             this.totalQuantity = totalQuantity;
             console.log("カート内の総数量:", totalQuantity);
+        },
+        async searchProducts() {
+            // キーワードをスペースで分割
+            const keywords = this.searchKeyword.trim().split(/\s+/);
+            /*
+            try {
+                const response = await fetch(`/api/product/search`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ keywords })
+                });
+                const data = await response.json();
+                console.log("検索結果:", data);
+                
+                // クエリパラメータとしても表示
+                this.$router.push({ name: 'product.search', query: { results: JSON.stringify(data) } });
+            } catch (error) {
+                console.error("検索中にエラーが発生しました:", error);
+            }
+            */
+            this.$router.push({ name: 'product.search', query: { keywords } });
         }
-        /*
-        getCartQuantity() {
-            const cartData = sessionStorage.getItem('cart');
-            totalQuantity = this.cart.reduce((total, item) => total + item.quantity, 0);
-            console.log("数量:", totalQuantity);
-        }*/
-        
     },
+
     beforeDestroy() {
         EventBus.$off('updateCartItemCount', this.updateCartItemCount);
     },
@@ -54,6 +83,22 @@ export default {
 </script>
 
 <style>
+/* カスタムのヘッダースタイル */
+.custom-bg {
+    background-color: #9ACD32; /* 黄緑色に設定 */
+    padding: 10px 0; /* 上下のパディングを追加 */
+}
+
+.form-inline {
+    display: flex; /* 子要素を横並びにする */
+    align-items: center; /* 垂直方向で中央揃え */
+}
+
+.search-btn {
+    min-width: 100px; /* ボタンの最小幅を設定 */
+    padding: 5px 15px; /* ボタンの内部パディングを調整 */
+}
+
 .cart-icon-wrapper {
     position: relative;
     display: inline-block;

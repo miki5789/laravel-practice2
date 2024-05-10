@@ -17,7 +17,9 @@ import ProductCartComponent from "./components/ProductCartComponent.vue";
 import UserInputComponent from "./components/UserInputComponent.vue";
 import UserConfirmComponent from "./components/UserConfirmComponent.vue";
 import ProductOrderConfirmComponent from "./components/ProductOrderConfirmComponent.vue";
-import UserCompleteComponent from "./components/UserComplete.vue";
+import UserCompleteComponent from "./components/UserCompleteComponent.vue";
+import ProductSearchComponent from "./components/ProductSearchComponent.vue";
+import OrderCompleteEmailComponent from "./components/OrderCompleteEmailComponent.vue";
 import './bootstrap';
 
 
@@ -81,7 +83,18 @@ const router = createRouter({
             path: '/user/complete',
             name: 'user.complete',
             component: UserCompleteComponent,
-          },          
+          },  
+          {
+            path: '/product/search',
+            name: 'product.search',
+            component: ProductSearchComponent,
+            props: route => ({ queryString: route.query.queryString })
+          },
+          {
+            path: '/email_template/order_complete',
+            name: 'email.send',
+            component: OrderCompleteEmailComponent,
+          },         
     ]
 });
 

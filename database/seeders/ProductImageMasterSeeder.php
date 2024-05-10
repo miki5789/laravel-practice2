@@ -14,7 +14,7 @@ class ProductImageMasterSeeder extends Seeder
     //商品番号_画像ナンバーなので
     public function run(): void
     {
-        for ($i = 0; $i <= 8; $i++) {   
+        for ($i = 25; $i <= 27; $i++) {   
             ProductImageMaster::create([
                 'product_id' => $i,
                 'image_path1' => "/images" . "/" . $i . "_" . "1.png",

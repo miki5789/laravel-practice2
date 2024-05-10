@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProductImageMaster extends Model
 {
     protected $table = 'product_image_master';
+    protected $primaryKey = 'product_image_path_id';
     //use HasApiTokens, HasFactory, Notifiable;
  
     /**

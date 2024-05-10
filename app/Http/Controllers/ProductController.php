@@ -9,6 +9,7 @@ use App\Models\ProductMaster;
 use App\Models\ProductImageMaster;
 use App\Models\ProductDetailMaster;
 use app\Models;
+use Illuminate\Http\Request;
 
 class ProductController extends BaseController
 {
@@ -51,6 +52,50 @@ class ProductController extends BaseController
     
         return $details;
     }
+
+    //商品検索
+    public function search(Request $request) {
+        // キーワード配列をリクエストから取得
+        $keywords = $request->input('keywords', []);
+    
+        // 親クエリの初期化
+        $query = ProductMaster::with([
+            'ProductDetailMaster' => function ($query) {
+                $query->where('quantity', '>=', 1);
+            },
+            'ProductImageMaster' => function ($query) {
+                $query->orderBy('product_image_path_id', 'asc');
+            }
+        ]);
+    
+        // キーワードが指定されている場合に AND 条件で検索
+        if (!empty($keywords)) {
+            // 各キーワードに対して AND 条件でフィルタリング
+            foreach ($keywords as $keyword) {
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('product_name', 'like', '%' . $keyword . '%')
+                        ->orWhere('category', 'like', '%' . $keyword . '%')
+                        ->orWhere('brand', 'like', '%' . $keyword . '%');
+                });
+            }
+    
+            // カラー属性に関する条件も適用
+            $query->whereHas('ProductDetailMaster', function ($q) use ($keywords) {
+                // AND 条件でカラー属性のフィルタを追加
+                foreach ($keywords as $keyword) {
+                    $q->orWhere('color', 'like', '%' . $keyword . '%');
+                }
+            });
+        }
+    
+        // 結果を取得
+        $products = $query->get();
+    
+        return response()->json($products);
+    }
+    
+    
+    
     
     
 }

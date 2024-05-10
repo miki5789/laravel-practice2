@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class PrefectureMaster extends Model
 {
     protected $table = 'prefecture_master';
+    protected $primaryKey = 'prefecture_code';
     //use HasApiTokens, HasFactory, Notifiable;
 
     /**

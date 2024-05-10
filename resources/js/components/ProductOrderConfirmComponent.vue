@@ -41,11 +41,13 @@
 
 
 <script>
+import { EventBus } from '../eventBus';
 export default {
   data() {
     return {
       cart: [],
       cartItem: null,
+      orderResponse: 0
     };
   },
   computed: {
@@ -55,6 +57,14 @@ export default {
   },
   mounted() {
     this.loadCart();
+  },
+  watch: { //cart配列の変更を監視、変更がある度にセッションストレージを更新
+    cart: {
+      handler() {
+        this.updateCart();
+      },
+      deep: true
+    }
   },
   methods: {
     loadCart() { //カート追加
@@ -73,20 +83,44 @@ export default {
     goToCart(){
       this.$router.push('/product/cart');
     },
+    updateCart() {
+      sessionStorage.setItem('cart', JSON.stringify(this.cart));
+      const totalQuantity = this.cart.reduce((sum, item) => sum + item.selectedQuantity, 0);
+      EventBus.emit('updateCartItemCount', totalQuantity);
+    },
     purchase(){
       // Vue.jsコンポーネント内
-    axios.post('/api/product/order/confirm', {
-      userData: JSON.parse(sessionStorage.getItem('userData')),
-      cartData: this.cart
-    })
-    .then(response => {
-        console.log("response:",response.data);
-    })
-    .catch(error => {
-        console.error("error:",error);
-    });
-      //this.$router.push('/user/complete');
+      axios.post('/api/product/order/confirm', {
+        userData: JSON.parse(sessionStorage.getItem('userData')),
+        cartData: this.cart
+      })
+      .then(response => {
+        // APIレスポンスのデータを変数に格納
+        sessionStorage.setItem('order', JSON.stringify({ order_id: response.data }));
+        console.log("response:", response.data);
+        
+        this.clearUserData();
+        this.clearCart();
+        this.$router.push('/user/complete');
+      })
+      .catch(error => {
+          console.error("error:",error);
+      });
+
+
+    },
+    // ユーザーデータの削除
+    clearUserData() {
+      sessionStorage.removeItem('userData');
+      this.userData = []; // ローカルデータもリセット
+      console.log("userData has been cleared");
+    },
+    clearCart() { // カートデータの削除
+      sessionStorage.removeItem('cart');
+      this.cart = []; // ローカルデータもリセット
+      console.log("cartData has been cleared");
     }
+
   }
 }
 </script>

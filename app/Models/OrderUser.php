@@ -11,6 +11,7 @@ class OrderUser extends Model
     protected $table = 'order_user';
     /// 主キーカラム名を指定
     protected $primaryKey = 'order_id';
+    
     //use HasApiTokens, HasFactory, Notifiable;
 
     /**
