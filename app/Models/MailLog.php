@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MailLog extends Model
 {
-    use belongsTo;
+    use HasFactory;
 
     protected $table = 'mail_log';
     protected $primaryKey = 'mail_log_id';
@@ -22,7 +22,7 @@ class MailLog extends Model
         'mail_log_id',
         'mail_master_id',
         'order_id',
-        'mail_form',
+        'mail_from',
         'mail_to',
         'mail_title',
         'mail_body',

@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\MailMaster;
+use App\Models\MailLog;
 
 class OrderCompleteMail extends Mailable
 {
@@ -19,7 +20,10 @@ class OrderCompleteMail extends Mailable
 
         // テンプレートデータを取得
         $template = MailMaster::where('mail_content', '注文完了メール')->first();
-        \Log::info('OrderCompleteMail');
+        //$this->template = $template;
+        $this->userData = $userData;
+        $this->cartData = $cartData;
+        \Log::info($template);
         $postcode = $userData['postcode'];
         $postcodeWithHyphen = substr($postcode, 0, 3) . '-' . substr($postcode, 3);
 
@@ -64,6 +68,7 @@ class OrderCompleteMail extends Mailable
             $this->body = str_replace('{{小計}}', $formattedTotalPrice, $this->body);
 
             $this->template = [
+                'mail_master_id' => $template->mail_master_id,
                 'mail_from' => $template->mail_from,
                 'mail_title' => $template->mail_title,
                 'mail_body' => $this->body
@@ -71,22 +76,33 @@ class OrderCompleteMail extends Mailable
             
         }
 
-        \Log::info('test');
-        \Log::info($template->mail_from);
-        \Log::info($template->mail_title);
-        \Log::info($template->mail_content);
-        \Log::info($this->body);
     }
 
     
     public function build()
     {
+        
         return $this->from($this->template['mail_from'])
                     ->subject($this->template['mail_title'])
                     ->text('')
                     ->html($this->body);
     }
     
+    public function createLog($submit_result, $order_id){
+        \Log::info($this->template);
+        MailLog::create([
+            
+            'mail_master_id' => $this->template['mail_master_id'], 
+            'order_id' => $order_id,
+            'mail_from'=> $this->template['mail_from'],
+            'mail_to'=> $this->userData['email'],
+            'mail_title'=>$this->template['mail_title'],
+            'mail_body'=>$this->template['mail_body'],
+            'sent_at' => now(),
+            'submit_result' => $submit_result,
+            'delete_flg' => false
+        ]);
+    }
 }
 
 

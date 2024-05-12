@@ -77,63 +77,17 @@ class OrderController extends BaseController
 
     public function sendOrderCompleteMail($userData, $cartData, $totalPrice, $order_id)
     {
-        /*
-        // テスト用
-        $mockRequestData = [
-            'surname' => '田中',
-            'given_name' => '洋子',
-            'order_id' => '12345',
-            'email' => 'kobayashi.m@doublecrown.jp'
-        ];
-
-        // テスト用のデータをリクエストから取得されたものとして使用
-        $surname = $mockRequestData['surname'];
-        $given_name = $mockRequestData['given_name'];
-        $order_id = $mockRequestData['order_id'];
-        $recipient_email = $mockRequestData['email'];
-        
-        // リクエストからデータを取得
-        
-        $surname = $request->input('surname');
-        $given_name = $request->input('given_name');
-        
-        $order_id = $request->input('order_id');
-        $recipient_email = $request->input('email');
-
-        
-        // Mailable クラスを使ってメールを送信
-        $data = [
-            'surname' => $surname,
-            'given_name' => $given_name,
-            'order_id' => $order_id,
-            'email' => $recipient_email
-        ];
-*/
-        //$this->orderUserData = ;
-        //$this->$orderProductData = $request->input('cart_data');
-
-        //$orderCompleteMail = new OrderCompleteMail(Request request);
-        //\Log::info('sendOrderCompleteMailin');
-        //\Log::info($orderUser);
-        //\Log::info($orderProduct);
 
         \Log::info($userData['email']);
-        Mail::to($userData['email'])->send(new OrderCompleteMail($userData, $cartData, $totalPrice, $order_id));
-        /*
-        $response = [
-            'surname' => $orderCompleteMail->surname,
-            'given_name' => $orderCompleteMail->given_name,
-            'order_id' => $orderCompleteMail->order_id,
-            'email' => $recipient_email,
-            'title' => $orderCompleteMail->template['mail_title'], // メールタイトル
-            'body' => $orderCompleteMail->template['mail_body'] // メール本文
-        ];
-        return response()->json($response);
-        */
-    }
-
-    public function createMailLog(Request $request){
-
+        try{
+            $orderCompleteMail = new OrderCompleteMail($userData, $cartData, $totalPrice, $order_id);
+            Mail::to($userData['email'])->send(new OrderCompleteMail($userData, $cartData, $totalPrice, $order_id));
+            $orderCompleteMail->createLog($submit_result = 1, $order_id);
+            
+        }catch(\Exception $e){
+             //失敗したメールログ
+             $orderCompleteMail->createLog($submit_result = 2, $order_id);
+        }
     }
 }
 
