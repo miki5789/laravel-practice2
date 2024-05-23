@@ -67,12 +67,12 @@ export default {
     async getDetails() {
       // Vue Routerからパラメータを取得
       const product_master_id = this.$route.params.product_master_id;
-      await axios.get(`/api/product/detail/${product_master_id}`)
-        .then((res) => {
-            this.details = res.data;
-            this.selectDetail();
-            console.log('GetDetails:OK');
-        }).catch((e) => console.log(e));
+      const res = await this.$http.get(`/api/product/detail/${product_master_id}`)
+        if(res){
+          this.details = res.data;
+          this.selectDetail();
+          console.log('GetDetails:OK');
+        }
     },
     selectDetail() {
     // product_id に基づいて該当する詳細を検索

@@ -84,9 +84,9 @@
     },
     // API で検索結果を取得
     async fetchSearchResults(keywords) {
-      try {
-        const queryString = keywords.map(k => `keywords[]=${encodeURIComponent(k)}`).join('&');
-        const response = await fetch(`/api/product/search?${queryString}`);
+      const queryString = keywords.map(k => `keywords[]=${encodeURIComponent(k)}`).join('&');
+      const response = await fetch(`/api/product/search?${queryString}`);
+      if(response){
         const data = await response.json();
         console.log("検索結果:", data);
 
@@ -95,8 +95,6 @@
 
         // クエリパラメータを更新
         this.$router.push({ name: 'product.search', query: { keywords: keywords.join(',') } });
-      } catch (error) {
-        console.error("検索結果の取得中にエラーが発生しました:", error);
       }
     },
     goToPage(pageNumber) {

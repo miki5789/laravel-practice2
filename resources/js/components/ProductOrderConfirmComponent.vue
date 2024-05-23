@@ -130,23 +130,6 @@ export default {
         
         this.$router.push('/user/complete');        
       }
-      /*
-      //axios.post('/api/product/order/confirm', {
-        userData: JSON.parse(sessionStorage.getItem('userData')),
-        cartData: this.cart
-      })
-      .then(response => {
-        // APIレスポンスのデータを変数に格納
-        sessionStorage.setItem('order', JSON.stringify({ order_id: response.data }));
-        console.log("response:", response.data);
-        
-        this.$router.push('/user/complete');
-      })
-      .catch(error => {
-          console.error("error:",error);
-      });
-
-    */
     },
 
 
