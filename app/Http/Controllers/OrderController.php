@@ -24,6 +24,7 @@ class OrderController extends BaseController
     public $order_id;
 
     public function confirm(Request $request){
+        \Log::info('confirmIn'); 
         $userData = $request->input('userData');
         $cartData = $request->input('cartData');
         \Log::info($cartData); 
@@ -85,8 +86,8 @@ class OrderController extends BaseController
             $orderCompleteMail->createLog($submit_result = 1, $order_id);
             
         }catch(\Exception $e){
-             //失敗したメールログ
-             $orderCompleteMail->createLog($submit_result = 2, $order_id);
+            //失敗したメールログ
+            $orderCompleteMail->createLog($submit_result = 2, $order_id);
         }
     }
 }

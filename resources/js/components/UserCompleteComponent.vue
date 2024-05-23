@@ -65,7 +65,7 @@ export default {
       console.log("Session data has been cleared");
     },
         // ユーザーデータの削除
-        clearUserData() {
+    clearUserData() {
       sessionStorage.removeItem('userData');
       this.userData = []; // ローカルデータもリセット
       console.log("userData has been cleared");

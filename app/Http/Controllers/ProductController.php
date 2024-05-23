@@ -94,6 +94,33 @@ class ProductController extends BaseController
         return response()->json($products);
     }
     
+    public function checkInventory(Request $request)
+    {
+        //$cart = $request->input('cart');
+        \Log::info('checkInventoryIn'); 
+        \Log::info($request);
+        $cartData = $request->input('cart');
+        
+        //\Log::info($cartData); 
+        //\Log::info(gettype($cartData)); 
+        foreach ($cartData as $cartItem) {
+            \Log::info('checkCartItem'); 
+            \Log::info($cartItem); 
+            \Log::info($cartItem['selectedQuantity']); 
+            
+            $product = ProductDetailMaster::where('product_id', $cartItem['productDetails']['product_id'])->first();
+            \Log::info($product['quantity']); 
+            if ($product['quantity'] < $cartItem['selectedQuantity']) {
+                return response()->json([
+                    'isStockAvailable' => false,
+                    'product_id' => $cartItem['productDetails']['product_id'],
+                    'remainingStock' => $product['quantity']
+                ]);
+            }
+        }
+        return response()->json(['isStockAvailable' => true]);
+    }
+
     
     
     

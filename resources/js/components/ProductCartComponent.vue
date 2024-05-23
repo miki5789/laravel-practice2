@@ -86,7 +86,7 @@ export default {
       //cartDataがあればjsonよみこみ
       this.cart = cartData ? JSON.parse(cartData) : [];
       console.log(cartData);
-    // カートデータが配列でない場合は空の配列にリセット
+      // カートデータが配列でない場合は空の配列にリセット
       if (!Array.isArray(this.cart)) {
         this.cart = []; 
       }

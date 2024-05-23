@@ -1,6 +1,10 @@
 <template>
   <div class="container mt-3">
     <div class="row">
+      <div v-if="errorMessage">
+        <p>{{ errorMessage }}</p>
+        <button class="btn btn-info" @click="confirmError">確認</button>
+      </div>
       <div>
         <h1>ご注文内容確認</h1>
         <hr> <!-- 区切り線 -->
@@ -33,7 +37,7 @@
 
       <div class="d-flex justify-content-end mt-3">
         <button class="btn btn-primary" @click="goToCart">修正</button>
-        <button class="btn btn-primary" @click="purchase">購入</button>
+        <button class="btn btn-primary" :disabled="isPurchaseDisabled" @click="checkInventory">購入</button>
       </div>
     </div>
   </div>
@@ -46,8 +50,10 @@ export default {
   data() {
     return {
       cart: [],
+      errorMessage: '',
       cartItem: null,
-      orderResponse: 0
+      orderResponse: 0,
+      isPurchaseDisabled: false
     };
   },
   computed: {
@@ -72,7 +78,7 @@ export default {
       //cartDataがあればjsonよみこみ
       this.cart = cartData ? JSON.parse(cartData) : [];
       console.log(cartData);
-    // カートデータが配列でない場合は空の配列にリセット
+      // カートデータが配列でない場合は空の配列にリセット
       if (!Array.isArray(this.cart)) {
         this.cart = []; 
       }
@@ -88,9 +94,44 @@ export default {
       const totalQuantity = this.cart.reduce((sum, item) => sum + item.selectedQuantity, 0);
       EventBus.emit('updateCartItemCount', totalQuantity);
     },
-    purchase(){
+    async checkInventory() {
+      const response = await this.$http.post('/api/product/check_inventory', {
+        cart: JSON.parse(sessionStorage.getItem('cart'))
+      });
+      console.log(response);
+
+      if(response.data.isStockAvailable) {
+          this.purchase();
+      } else {
+        this.isPurchaseDisabled = true;
+        this.errorMessage = `申し訳ありません、他のお客様が購入されたため、残りの在庫数が${response.data.remainingStock}点になりました。`;
+        this.cart.forEach(item => {
+          if (item.productDetails.product_id === response.data.product_id) {
+            item.selectedQuantity = response.data.remainingStock;
+          }
+        });
+      }//複数の在庫が切れた場合の対応
+      //在庫が0個になったときの対応
+      
+    },
+    confirmError() {
+      this.errorMessage = '';
+      this.isPurchaseDisabled = false;
+    },
+    async purchase(){
       // Vue.jsコンポーネント内
-      axios.post('/api/product/order/confirm', {
+      const response = await this.$http.post('/api/product/order/confirm', {
+        userData: JSON.parse(sessionStorage.getItem('userData')),
+        cartData: JSON.parse(sessionStorage.getItem('cart'))
+      })
+      if(response){
+        sessionStorage.setItem('order', JSON.stringify({ order_id: response.data }));
+        console.log("response:", response.data);
+        
+        this.$router.push('/user/complete');        
+      }
+      /*
+      //axios.post('/api/product/order/confirm', {
         userData: JSON.parse(sessionStorage.getItem('userData')),
         cartData: this.cart
       })
@@ -99,27 +140,15 @@ export default {
         sessionStorage.setItem('order', JSON.stringify({ order_id: response.data }));
         console.log("response:", response.data);
         
-        this.clearUserData();
-        this.clearCart();
         this.$router.push('/user/complete');
       })
       .catch(error => {
           console.error("error:",error);
       });
 
+    */
+    },
 
-    },
-    // ユーザーデータの削除
-    clearUserData() {
-      sessionStorage.removeItem('userData');
-      this.userData = []; // ローカルデータもリセット
-      console.log("userData has been cleared");
-    },
-    clearCart() { // カートデータの削除
-      sessionStorage.removeItem('cart');
-      this.cart = []; // ローカルデータもリセット
-      console.log("cartData has been cleared");
-    }
 
   }
 }

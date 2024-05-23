@@ -6,6 +6,7 @@
 
 import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
+import store from './store.js';
 import HeaderComponent from "./components/HeaderComponent.vue";
 import TaskListComponent from "./components/TaskListComponent.vue";
 import TaskShowComponent from "./components/TaskShowComponent.vue";
@@ -20,7 +21,9 @@ import ProductOrderConfirmComponent from "./components/ProductOrderConfirmCompon
 import UserCompleteComponent from "./components/UserCompleteComponent.vue";
 import ProductSearchComponent from "./components/ProductSearchComponent.vue";
 import OrderCompleteEmailComponent from "./components/OrderCompleteEmailComponent.vue";
+import ErrorComponent from "./components/ErrorComponent.vue";
 import './bootstrap';
+import http from '../../src/utils/axiosErrorHandler.js';
 
 
 // Vue Routerの作成
@@ -75,10 +78,16 @@ const router = createRouter({
             component: UserConfirmComponent,
           },
           {
+            path: '/api/product/check_inventory',
+            name: 'product.inventory.check',
+            component: ProductOrderConfirmComponent,
+          },
+          {
             path: '/product/order/confirm',
             name: 'order.confirm',
             component: ProductOrderConfirmComponent,
           },
+          
           {
             path: '/user/complete',
             name: 'user.complete',
@@ -94,12 +103,26 @@ const router = createRouter({
             path: '/email_template/order_complete',
             name: 'email.send',
             component: OrderCompleteEmailComponent,
-          },         
+          },
+
+          {
+            path: '/api/error',
+            name: 'error.result',
+            component: ErrorComponent,
+          },                         
     ]
 });
 
+
 const app = createApp();
-app.use(router);
+
+
+
 app.component('header-component', HeaderComponent);
 
+
+app.config.globalProperties.$http = http;
+app.use(router);
+app.use(store);
 app.mount('#app');
+export default router;

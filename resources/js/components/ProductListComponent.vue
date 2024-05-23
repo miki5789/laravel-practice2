@@ -32,7 +32,7 @@
   </template>
   
   <script>
-  
+  import axios from 'axios';
   export default {
     data() {
       return {
@@ -54,11 +54,25 @@
     }
     },
     methods: {
-      getProducts() {
-        axios.get('/api/index')
+      async getProducts() {
+        const res = await this.$http.get('/api/index');
+        if(res) {
+          this.products = res.data;
+          //throw new Error('test');
+          /*
           .then((res) => {
             this.products = res.data;
-          }).catch((e) => console.log(e));
+          
+          }).catch((error) => {
+            console.log('errorIn');
+            console.log(error);
+            throw error;
+            //throwしないと例外はここで終わってしまう
+            //throwするか、catchしてからthrowするか
+          
+          });
+          */
+        };
       },
       goToPage(pageNumber) {
         // ページ番号が範囲内であれば移動

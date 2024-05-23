@@ -7,6 +7,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\Controller;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -52,4 +54,9 @@ Route::get('/email_template/{templateName}', function ($templateName) {
 
 Route::post('/product/search', [ProductController::class, 'search'])->name('product.search');
 Route::get('/product/search', [ProductController::class, 'search'])->name('product.search');
+
+Route::get('/product/check_inventory', [ProductController::class, 'checkInventory'])->name('product.inventory.check');
+Route::post('/product/check_inventory', [ProductController::class, 'checkInventory'])->name('product.inventory.check');
+
+Route::post('/error', [Controller::class, 'errorCheck'])->name('error.check');
 
