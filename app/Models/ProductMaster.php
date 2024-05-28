@@ -40,6 +40,7 @@ class ProductMaster extends Model
         'product_name',
         'brand',
         'category',
+        'keywords',
         'delete_flg',
         'updated_at',
         'created_at'

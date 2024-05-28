@@ -17,9 +17,10 @@
       </div>
 
       <div class="row">
+        <p v-if="selectedDetail.quantity <= 0">在庫なし</p>
         <!-- プルダウンメニュー -->
         <select v-if="selectedDetail.quantity > 0" class="form-select" v-model="selectedQuantity">
-          <option v-for="n in Math.min(parseInt(selectedDetail.quantity), 10)" :key="n" :value="n">{{ n }}</option>
+          個数：<option v-for="n in Math.min(parseInt(selectedDetail.quantity), 10)" :key="n" :value="n">{{ n }}</option>
         </select>
         <!-- カートに入れるボタン -->
         <button class="btn btn-primary" @click="addToCart">カートに入れる</button>

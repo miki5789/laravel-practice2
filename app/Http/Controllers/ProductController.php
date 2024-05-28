@@ -75,17 +75,11 @@ class ProductController extends BaseController
                 $query->where(function ($q) use ($keyword) {
                     $q->where('product_name', 'like', '%' . $keyword . '%')
                         ->orWhere('category', 'like', '%' . $keyword . '%')
-                        ->orWhere('brand', 'like', '%' . $keyword . '%');
+                        ->orWhere('brand', 'like', '%' . $keyword . '%')
+                        ->orWhere('keywords', 'like', '%' . $keyword . '%');
                 });
             }
-    
-            // カラー属性に関する条件も適用
-            $query->whereHas('ProductDetailMaster', function ($q) use ($keywords) {
-                // AND 条件でカラー属性のフィルタを追加
-                foreach ($keywords as $keyword) {
-                    $q->orWhere('color', 'like', '%' . $keyword . '%');
-                }
-            });
+
         }
     
         // 結果を取得

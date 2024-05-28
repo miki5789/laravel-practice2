@@ -16,6 +16,7 @@ const http = axios.create({
 
 // リクエストエラー時の共通処理
 http.interceptors.request.use(
+  /*
   console.log('requestIn:'),
   response => response,
   config => {
@@ -24,6 +25,25 @@ http.interceptors.request.use(
   },
   error => {
     return Promise.reject(error);
+  }*/
+  response => response,
+  console.log('requestIn:'),
+  error => {
+    console.log('httpIn');
+    console.log(error.response);
+      
+    if (error.response && error.response.status >= 400) {
+      axios.post('/api/error', error)
+      // エラーページにリダイレクト
+      //router.push({ name: 'error.check', params: { error: error.response }});
+      .then(response => {
+        console.log(response);
+        store.commit('setErrorData', response);
+        router.push({ name: 'error.result' });
+      });
+    }
+    console.log('before return');
+    return Promise.reject(response);
   }
 );
 

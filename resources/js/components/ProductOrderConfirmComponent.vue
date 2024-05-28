@@ -1,14 +1,15 @@
 <template>
   <div class="container mt-3">
     <div class="row">
-      <div v-if="errorMessage">
-        <p>{{ errorMessage }}</p>
-        <button class="btn btn-info" @click="confirmError">確認</button>
-      </div>
+
       <div>
         <h1>ご注文内容確認</h1>
         <hr> <!-- 区切り線 -->
       </div>
+      <div v-if="topPageMessage" class="alert alert-info">
+        {{ topPageMessage }}
+      </div>
+
       <div v-if="cart.length">
         <div v-for="(item, index) in cart" :key="index">
           <div class="row align-items-center mb-3"> <!-- 各アイテムを囲む行 -->
@@ -23,7 +24,13 @@
               <div class="d-flex align-items-center">
                 <span>数量：{{ item.selectedQuantity }}</span>
               </div>
+
+              <div v-if="item.errorMessage">
+                <p>{{item.errorMessage}}</p>
+                <button class="btn btn-info" @click="confirmError(index, item.errorMessage)">確認</button>
+              </div>
             </div>
+          </div>
           </div>
           <hr> <!-- 区切り線 -->
         </div>
@@ -40,7 +47,6 @@
         <button class="btn btn-primary" :disabled="isPurchaseDisabled" @click="checkInventory">購入</button>
       </div>
     </div>
-  </div>
 </template>
 
 
@@ -53,7 +59,9 @@ export default {
       errorMessage: '',
       cartItem: null,
       orderResponse: 0,
-      isPurchaseDisabled: false
+      isPurchaseDisabled: false,
+      $inventoryError: [],
+      topPageMessage: '',
     };
   },
   computed: {
@@ -104,19 +112,51 @@ export default {
           this.purchase();
       } else {
         this.isPurchaseDisabled = true;
-        this.errorMessage = `申し訳ありません、他のお客様が購入されたため、残りの在庫数が${response.data.remainingStock}点になりました。`;
+
         this.cart.forEach(item => {
           if (item.productDetails.product_id === response.data.product_id) {
+            
             item.selectedQuantity = response.data.remainingStock;
+  
+            if(response.data.remainingStock >= 1){
+              item.errorMessage = `申し訳ありません、他のお客様が購入されたため、残りの在庫数が${response.data.remainingStock}点になりました。`;
+            }else if(response.data.remainingStock == 0){
+              item.errorMessage = `申し訳ありません、他のお客様が購入されたため、この商品はご購入いただけません。`;
+            }
+            /*
+            this.inventoryError.push({
+              product_id: response.data.product_id,
+              message: errorMessage
+            });
+            */          
           }
         });
       }//複数の在庫が切れた場合の対応
       //在庫が0個になったときの対応
       
     },
-    confirmError() {
-      this.errorMessage = '';
-      this.isPurchaseDisabled = false;
+    confirmError(index, errorMessage) {
+      console.log('confirmErrorIn');
+      console.log(this.cart[index].productDetails.quantity);
+      if (errorMessage == '申し訳ありません、他のお客様が購入されたため、この商品はご購入いただけません。') {
+        this.cart.splice(index, 1);
+      }
+
+      if (this.cart.length > 0) {
+        this.isPurchaseDisabled = false;
+      } else { // カートの商品が0の場合
+        this.isPurchacseDisabled = true;
+        this.showTopPageMessage();
+      }
+    },
+    showTopPageMessage() {
+      // メッセージを表示するための変数を追加
+      this.topPageMessage = "TOPページに遷移します...";
+      // 3秒後にTOPページに遷移
+      setTimeout(() => {
+        this.topPageMessage = ""; // メッセージをクリア
+        this.$router.push('/index'); // TOPページに遷移
+      }, 3000); // 3000ミリ秒（3秒）後に遷移
     },
     async purchase(){
       // Vue.jsコンポーネント内
@@ -131,7 +171,14 @@ export default {
         this.$router.push('/user/complete');        
       }
     },
-
+    /*
+    getErrorMessage(product_id) {
+      
+      const error = this.inventoryError.find(error => error.product_id === product_id);
+      console.log(error.product_id);
+      console.log(error);
+      return error ? error.errormessage : '';
+    }*/
 
   }
 }

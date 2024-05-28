@@ -24,54 +24,59 @@ class OrderController extends BaseController
     public $order_id;
 
     public function confirm(Request $request){
-        \Log::info('confirmIn'); 
-        $userData = $request->input('userData');
-        $cartData = $request->input('cartData');
-        \Log::info($cartData); 
-        $orderDate = now();
+        try{
+            DB::beginTransaction();
+            \Log::info('confirmIn'); 
+            $userData = $request->input('userData');
+            $cartData = $request->input('cartData');
+            \Log::info($cartData); 
+            $orderDate = now();
 
-        $orderUser = new OrderUser();
-        $orderUser->surname = $userData['surname'];
-        $orderUser->given_name = $userData['given_name'];
-        $orderUser->surname_kana = $userData['surname_kana'];
-        $orderUser->given_name_kana = $userData['given_name_kana'];
-        $orderUser->post_code = $userData['postcode'];
-        $orderUser->prefecture = $userData['prefecture'];
-        $orderUser->address = $userData['city'] . $userData['street'] . $userData['room'];
-        $orderUser->email = $userData['email'];
-        $orderUser->order_date = $orderDate;
-        $orderUser->delete_flg = false;
+            $orderUser = new OrderUser();
+            $orderUser->surname = $userData['surname'];
+            $orderUser->given_name = $userData['given_name'];
+            $orderUser->surname_kana = $userData['surname_kana'];
+            $orderUser->given_name_kana = $userData['given_name_kana'];
+            $orderUser->post_code = $userData['postcode'];
+            $orderUser->prefecture = $userData['prefecture'];
+            $orderUser->address = $userData['city'] . $userData['street'] . $userData['room'];
+            $orderUser->email = $userData['email'];
+            $orderUser->order_date = $orderDate;
+            $orderUser->delete_flg = false;
 
-        $orderUser->save();
+            $orderUser->save();
         
-        \Log::info($orderUser);
-        $order_id = $orderUser->order_id;
-        $totalPrice = 0;
+            \Log::info($orderUser);
+            $order_id = $orderUser->order_id;
+            $totalPrice = 0;
 
-        foreach ($cartData as $cart) {
-            \Log::info($cart);
-            $orderProduct = new OrderProduct();
-            $orderProduct->order_id = $order_id;
-            $orderProduct->product_id = $cart['productDetails']['product_id'];
-            $orderProduct->order_quantity = $cart['selectedQuantity'];
-            $orderProduct->unit_price = $cart['productDetails']['price'];
-            $orderProduct->order_date = $orderDate;
-            $orderProduct->delete_flg = false;
-            $orderProduct->save();
-            $totalPrice = $totalPrice + ($cart['productDetails']['price'] * $cart['selectedQuantity']);
+            foreach ($cartData as $cart) {
+                \Log::info($cart);
+                $orderProduct = new OrderProduct();
+                $orderProduct->order_id = $order_id;
+                $orderProduct->product_id = $cart['productDetails']['product_id'];
+                $orderProduct->order_quantity = $cart['selectedQuantity'];
+                $orderProduct->unit_price = $cart['productDetails']['price'];
+                $orderProduct->order_date = $orderDate;
+                $orderProduct->delete_flg = false;
+                $orderProduct->save();
+                $totalPrice = $totalPrice + ($cart['productDetails']['price'] * $cart['selectedQuantity']);
 
-            //在庫数変更
-            $product = ProductDetailMaster::where('product_id', $cart['productDetails']['product_id'])->first();
-            $originalQuantity = $product->quantity;
-            $newQuantity = $originalQuantity - $cart['selectedQuantity'];
-            $product->update(['quantity' => $newQuantity]); // キーと値のペアで指定
-            \Log::info($product->quantity);
+                //在庫数変更
+                $product = ProductDetailMaster::where('product_id', $cart['productDetails']['product_id'])->first();
+                $originalQuantity = $product->quantity;
+                $newQuantity = $originalQuantity - $cart['selectedQuantity'];
+                $product->update(['quantity' => $newQuantity]); // キーと値のペアで指定
+                \Log::info($product->quantity);
+            }
+
+            $orderUser->update(['total_price' => $totalPrice]);
+            $this->sendOrderCompleteMail($userData, $cartData, $totalPrice, $order_id);
+            DB::commit(); //save
+        }catch(\Exception $e){
+            DB::rollBack(); 
         }
-
-        $orderUser->update(['total_price' => $totalPrice]);
-        
-        $this->sendOrderCompleteMail($userData, $cartData, $totalPrice, $order_id);
-
+            
         return $order_id;
         
     }

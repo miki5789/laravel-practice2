@@ -10,6 +10,7 @@
           - {{ error }}
         </div>
       </div>
+
       <div class="label">
         <label for="surname">姓</label>
         <label for="given_name">名</label>
@@ -41,22 +42,26 @@
 
       <div class="label">
         <label for="prefecture">都道府県</label>
-        <label for="city">市町村</label>
       </div>
-      <div class="input-row d-flex">
+      <div class="input-row">
         <select v-if="prefectures" class="form-select" v-model="prefecture">
           <option value="">選択してください</option>
           <option v-for="prefecture in prefectures" :key="prefecture.prefecture_code" :value="prefecture.prefecture_name">{{ prefecture.prefecture_name }}</option>
         </select>
-        <input type="text" v-model="city">
       </div>
-
       <div class="label">
+        <label for="city">市町村</label>
         <label for="street">番地</label>
+      </div>
+      <div class="input-row">
+        <input type="text" v-model="city">
+        <input type="text" v-model="street">
+      </div>
+      <div class="label">
+        
         <label for="room">建物名・部屋番号</label>
       </div>
       <div class="input-row">
-        <input type="text" v-model="street">
         <input type="text" v-model="room">
       </div>
 
@@ -67,7 +72,7 @@
         <input type="text" v-model="email">
       </div>
       
-      <div class="d-flex justify-content-end mt-3">
+      <div class="d-flex justify-content-end mt-3 button-group">
         <button class="btn btn-primary" @click="cart">戻る</button>
         <button class="btn btn-primary" @click="validate" :disabled="isDisabled">進む</button>
       </div>
@@ -206,7 +211,9 @@ export default {
 
 
 <style>
-
+.button-group button {
+  margin-left: 10px; /* ボタン間のマージンを追加 */
+}
 
 .input-row {
   display: flex;
@@ -215,16 +222,17 @@ export default {
 }
 
 label {
-  margin-right: 200px; /* ラベルの右マージン */
+  margin-bottom: 10px;
   white-space: nowrap; /* ラベルが折り返さないように設定 */
 }
 
 input[type="text"], input[type="number"] {
   margin-right: 20px; /* 入力ボックスの右マージン */
+  width:200px;
 }
 
 .form-select {
-  width: 150px; /* 幅を指定 */
+  width: 200px; /* 幅を指定 */
   padding: 0.25rem 0.5rem; /* パディングを調整 */
   font-size: 0.875rem; /* フォントサイズを小さく */
   margin-right: 20px; /* ラベルの右マージン */

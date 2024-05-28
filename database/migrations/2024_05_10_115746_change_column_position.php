@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // カラムの順序を移動（primary_idをorder_idの前に移動）
-        DB::statement("ALTER TABLE order_product MODIFY COLUMN primary_id INT AUTO_INCREMENT PRIMARY KEY FIRST");
+        //DB::statement("ALTER TABLE order_product MODIFY COLUMN primary_id INT AUTO_INCREMENT PRIMARY KEY FIRST");
     }
 
     /**
