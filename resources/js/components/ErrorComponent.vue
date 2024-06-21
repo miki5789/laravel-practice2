@@ -43,7 +43,6 @@ export default {
     flex-direction: column;
     justify-content: space-between; /* 内容を均等に分布させる */
   }
-
   .product-item {
   display: flex;
   flex-direction: column;
