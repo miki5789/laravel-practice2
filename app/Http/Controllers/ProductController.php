@@ -55,6 +55,9 @@ class ProductController extends BaseController
 
     //商品検索
     public function search(Request $request) {
+
+        \Log::info('detailHeader:'); 
+        \Log::info($request->body); 
         // キーワード配列をリクエストから取得
         $keywords = $request->input('keywords', []);
     

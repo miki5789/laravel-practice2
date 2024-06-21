@@ -25,6 +25,7 @@ class ProductController extends BaseController
         return $products;
     }
     
+    /*
     public function detail($product_master_id)
     {
         $details = ProductDetailMaster::with([
@@ -48,7 +49,7 @@ class ProductController extends BaseController
     
         return $details;
     }
-
+*/
     
 }
 

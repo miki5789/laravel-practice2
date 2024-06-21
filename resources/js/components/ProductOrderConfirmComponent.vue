@@ -123,12 +123,7 @@ export default {
             }else if(response.data.remainingStock == 0){
               item.errorMessage = `申し訳ありません、他のお客様が購入されたため、この商品はご購入いただけません。`;
             }
-            /*
-            this.inventoryError.push({
-              product_id: response.data.product_id,
-              message: errorMessage
-            });
-            */          
+   
           }
         });
       }//複数の在庫が切れた場合の対応
@@ -171,14 +166,6 @@ export default {
         this.$router.push('/user/complete');        
       }
     },
-    /*
-    getErrorMessage(product_id) {
-      
-      const error = this.inventoryError.find(error => error.product_id === product_id);
-      console.log(error.product_id);
-      console.log(error);
-      return error ? error.errormessage : '';
-    }*/
 
   }
 }

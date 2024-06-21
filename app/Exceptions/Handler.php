@@ -92,7 +92,7 @@ class Handler extends ExceptionHandler
                     $message = 'Service Unavailable';
                     break;
                 default:
-                    $message = 'エラー';
+                    $message = 'エラーが発生しました';
                     break;
             }
             //乱数発行

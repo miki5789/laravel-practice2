@@ -138,15 +138,15 @@ export default {
     // 数字を文字に変換 第１引数が郵便番号
     // 第２がコールバックで引数に住所
     fetchAddress() {
-        new YubinBangoCore(String(this.post_code), (address) => {
-            // 住所の形式に合わせて調整すること
-            
-            this.prefecture = address.region;
-            this.city = address.locality;
-            this.street = address.street;
-            
-            console.log(address)
-        });
+      new YubinBangoCore(String(this.post_code), (address) => {
+          // 住所の形式に合わせて調整すること
+          
+          this.prefecture = address.region;
+          this.city = address.locality;
+          this.street = address.street;
+          
+          console.log(address)
+      });
     },
     validate() {
       let valid = true;

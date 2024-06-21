@@ -32,7 +32,7 @@ class Controller extends BaseController
 
         switch ($status_code) {
             case 400:
-                $message = 'Bad Request';
+                $message = 'リクエストに失敗しました';
                 break;
             case 401:
                 $message = '認証に失敗しました';
